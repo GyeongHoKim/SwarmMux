@@ -1,0 +1,64 @@
+{
+  "format_on_save": "on",
+  "ensure_final_newline_on_save": true,
+  "remove_trailing_whitespace_on_save": true,
+  "preferred_line_length": 90,
+
+  "languages": {
+    "Go": {
+      "tab_size": 4,
+      "hard_tabs": true,
+      "preferred_line_length": 120,
+      "format_on_save": "language_server",
+      "code_actions_on_format": {
+        "source.organizeImports": true
+      }
+    },
+    "YAML": { "tab_size": 2 },
+    "JSON": { "tab_size": 2 },
+    "JSONC": { "tab_size": 2 },
+    "Markdown": {
+      "format_on_save": "off",
+      "remove_trailing_whitespace_on_save": false
+    }
+  },
+
+  "lsp": {
+    "gopls": {
+      "initialization_options": {
+        "usePlaceholders": true,
+        "staticcheck": true,
+        "local": "github.com/GyeongHoKim/swarmmux",
+        "semanticTokens": true,
+        "analyses": {
+          "shadow": true,
+          "unusedparams": true,
+          "unusedwrite": true,
+          "nilness": true,
+          "useany": true
+        },
+        "hints": {
+          "assignVariableTypes": true,
+          "compositeLiteralFields": true,
+          "constantValues": true,
+          "functionTypeParameters": true,
+          "parameterNames": true,
+          "rangeVariableTypes": true
+        },
+        "codelenses": {
+          "generate": true,
+          "test": true,
+          "tidy": true,
+          "upgrade_dependency": true
+        }
+      }
+    }
+  },
+
+  "file_scan_exclusions": [
+    "**/node_modules",
+    "**/.git",
+    "**/coverage.out",
+    "**/coverage.html"
+  ]
+}

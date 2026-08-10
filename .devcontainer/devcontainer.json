@@ -1,0 +1,47 @@
+{
+  "name": "SwarmMux",
+
+  // Official Dev Containers image. Go 1.24 matches the minimum version the SDK
+  // supports; mise then pins the exact patch release plus the rest of the
+  // toolchain, so the image tag and mise.toml never disagree by much.
+  "image": "mcr.microsoft.com/devcontainers/go:1.24-bookworm",
+
+  "features": {
+    // Needed for commitlint in the commit-msg hook. Not an SDK dependency.
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "22"
+    }
+  },
+
+  "containerEnv": {
+    "MISE_TRUSTED_CONFIG_PATHS": "/workspaces/swarmmux"
+  },
+
+  "remoteEnv": {
+    "PATH": "${containerEnv:HOME}/.local/share/mise/shims:${containerEnv:PATH}"
+  },
+
+  "onCreateCommand": "curl -fsSL https://mise.run | sh",
+
+  // mise shims are already on PATH above, so `just setup` resolves the pinned
+  // just/golangci-lint/lefthook after `mise install` has run.
+  "postCreateCommand": "mise trust --yes && mise install && npm ci && lefthook install",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "golang.go",
+        "editorconfig.editorconfig",
+        "nefrob.vscode-just-syntax",
+        "tamasfe.even-better-toml",
+        "redhat.vscode-yaml",
+        "bierner.markdown-mermaid"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash"
+      }
+    }
+  },
+
+  "remoteUser": "vscode"
+}

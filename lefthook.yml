@@ -1,0 +1,38 @@
+# Git hooks for SwarmMux. Install with `just hooks` (or `just setup`).
+#
+# Hook budget: pre-commit stays fast so nobody reaches for --no-verify.
+# Anything slow (full test suite) runs on pre-push instead.
+min_version: 1.10.0
+assert_lefthook_installed: true
+
+commit-msg:
+  jobs:
+    - name: commitlint
+      # {1} is the path to the file holding the commit message.
+      run: commitlint --edit {1}
+
+pre-commit:
+  # Sequential on purpose: format rewrites files that lint then reads.
+  parallel: false
+  jobs:
+    - name: format
+      glob: "*.go"
+      run: golangci-lint fmt {staged_files}
+      stage_fixed: true
+
+    - name: lint
+      glob: "*.go"
+      run: golangci-lint run
+
+    - name: tidy
+      glob: "go.mod"
+      run: go mod tidy
+
+pre-push:
+  parallel: true
+  jobs:
+    - name: build
+      run: go build ./...
+
+    - name: test
+      run: go test ./...

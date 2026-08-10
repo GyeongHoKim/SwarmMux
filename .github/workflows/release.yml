@@ -1,0 +1,31 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release-please:
+    name: release-please
+    runs-on: ubuntu-latest
+    steps:
+      - uses: googleapis/release-please-action@v4
+        id: release
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+      - name: Summarize
+        if: ${{ steps.release.outputs.release_created }}
+        run: |
+          echo "Released ${{ steps.release.outputs.tag_name }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "${{ steps.release.outputs.html_url }}" >> "$GITHUB_STEP_SUMMARY"

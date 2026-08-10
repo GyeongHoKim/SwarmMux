@@ -1,0 +1,11 @@
+# Normalize to LF in the repository and in the working tree on every platform.
+# Git hooks and Go sources must not be checked out with CRLF.
+* text=auto eol=lf
+
+# Collapse generated/lock files in diffs and reviews.
+package-lock.json  linguist-generated=true -diff
+go.sum             linguist-generated=true
+CHANGELOG.md       linguist-generated=true
+
+# Keep docs out of the repository language statistics.
+docs/**  linguist-documentation=true

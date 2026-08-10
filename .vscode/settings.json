@@ -1,0 +1,57 @@
+{
+  "go.lintTool": "golangci-lint",
+  "go.lintFlags": ["--path-mode=abs", "--fast-only"],
+  "go.formatTool": "custom",
+  "go.alternateTools": {
+    "customFormatter": "golangci-lint"
+  },
+  "go.formatFlags": ["fmt", "--stdin"],
+
+  "go.useLanguageServer": true,
+  "go.toolsManagement.autoUpdate": true,
+  "go.testFlags": ["-v", "-shuffle=on"],
+  "go.testTimeout": "60s",
+  "go.coverageDecorator": {
+    "type": "gutter"
+  },
+
+  "gopls": {
+    "ui.semanticTokens": true,
+    "ui.completion.usePlaceholders": true,
+    "ui.diagnostic.staticcheck": true,
+    "ui.diagnostic.analyses": {
+      "shadow": true,
+      "unusedparams": true,
+      "unusedwrite": true,
+      "nilness": true,
+      "useany": true
+    },
+    "formatting.local": "github.com/GyeongHoKim/swarmmux"
+  },
+
+  "[go]": {
+    "editor.defaultFormatter": "golang.go",
+    "editor.formatOnSave": true,
+    "editor.insertSpaces": false
+  },
+
+  "[json]": { "editor.defaultFormatter": "vscode.json-language-features" },
+  "[jsonc]": { "editor.defaultFormatter": "vscode.json-language-features" },
+  "[yaml]": { "editor.tabSize": 2 },
+  "[markdown]": { "editor.wordWrap": "bounded", "editor.rulers": [90] },
+
+  "editor.rulers": [90],
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "files.eol": "\n",
+
+  "files.exclude": {
+    "**/node_modules": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "coverage.out": true,
+    "coverage.html": true,
+    "package-lock.json": true
+  }
+}

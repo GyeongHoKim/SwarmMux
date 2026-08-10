@@ -1,0 +1,127 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  # Uses mise so the linter version here is byte-identical to the one pinned in
+  # mise.toml and used by the pre-commit hook. A lint failure that only shows up
+  # in CI is a version mismatch, and this removes that class of surprise.
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: jdx/mise-action@v4
+
+      - name: Verify .golangci.yml against the v2 schema
+        run: just lint-config
+
+      - name: Check formatting
+        run: just format-check
+
+      - name: Lint
+        run: just lint
+
+  test:
+    name: test (${{ matrix.os }}, go ${{ matrix.go }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        # '1.24' is the minimum version README promises; 'stable' catches
+        # regressions in the current toolchain.
+        go: ['1.24', 'stable']
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-go@v7
+        with:
+          go-version: ${{ matrix.go }}
+
+      - run: go build ./...
+
+      - run: go test ./...
+
+  race:
+    name: race
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-go@v7
+        with:
+          go-version: stable
+
+      # -shuffle=on surfaces tests that depend on execution order, which matters
+      # for a package whose state lives in shared swarm membership.
+      - run: go test -race -shuffle=on ./...
+
+  coverage:
+    name: coverage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-go@v7
+        with:
+          go-version: stable
+
+      - run: go test -coverprofile=coverage.out -covermode=atomic ./...
+
+      - run: go tool cover -func=coverage.out
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: coverage
+          path: coverage.out
+          retention-days: 14
+
+  tidy:
+    name: tidy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-go@v7
+        with:
+          go-version: stable
+
+      - run: go mod tidy
+
+      - name: Fail if go.mod or go.sum is not tidy
+        run: git diff --exit-code -- go.mod go.sum
+
+  commitlint:
+    name: commitlint
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # commitlint walks the commit range, so the shallow default is not enough.
+          fetch-depth: 0
+
+      - uses: jdx/mise-action@v4
+
+      - run: npm ci
+
+      # release-please derives the next version from these commit types, so an
+      # unconventional message merged to main silently breaks versioning.
+      - name: Lint pull request commits
+        run: >
+          npx commitlint
+          --from ${{ github.event.pull_request.base.sha }}
+          --to ${{ github.event.pull_request.head.sha }}
+          --verbose

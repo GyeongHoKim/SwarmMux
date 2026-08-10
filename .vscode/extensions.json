@@ -1,0 +1,11 @@
+{
+  "recommendations": [
+    "golang.go",
+    "editorconfig.editorconfig",
+    "nefrob.vscode-just-syntax",
+    "tamasfe.even-better-toml",
+    "redhat.vscode-yaml",
+    "bierner.markdown-mermaid"
+  ],
+  "unwantedRecommendations": []
+}

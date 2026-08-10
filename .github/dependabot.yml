@@ -1,0 +1,34 @@
+version: 2
+
+updates:
+  # Action versions are pinned in the workflows, so they need an updater.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: ci
+    groups:
+      actions:
+        patterns: ["*"]
+
+  - package-ecosystem: gomod
+    directory: /
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: build
+    groups:
+      go-dependencies:
+        patterns: ["*"]
+
+  # Development-only; commitlint and its config move together.
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: build
+    groups:
+      commitlint:
+        patterns: ["@commitlint/*"]

@@ -1,0 +1,28 @@
+# Tool versions for SwarmMux development.
+#
+# mise owns tool VERSIONS; the justfile owns COMMANDS. Deliberately no [tasks]
+# section here — a command defined in both files drifts out of sync.
+#
+#   mise install    install everything pinned below
+#   just setup      the full bootstrap (mise + npm + git hooks)
+
+min_version = "2025.1.0"
+
+[tools]
+# Pinned to the minimum Go version SwarmMux supports, so local builds fail on
+# anything newer that slipped in by accident. CI additionally tests `stable`.
+go = "1.24"
+
+golangci-lint = "2"
+just = "1"
+lefthook = "1"
+gotestsum = "1"
+
+# Node is here only to run commitlint in the commit-msg hook and in CI.
+# It is not a dependency of the SDK.
+node = "22"
+
+[env]
+# Put commitlint and other npm bins on PATH so hooks can call them directly
+# instead of going through `npx`.
+_.path = ["{{config_root}}/node_modules/.bin"]
