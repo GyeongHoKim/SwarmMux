@@ -22,7 +22,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - uses: jdx/mise-action@v4
+      - uses: jdx/mise-action@v5
 
       - name: Verify .golangci.yml against the v2 schema
         run: just lint-config
@@ -113,7 +113,7 @@ jobs:
           # commitlint walks the commit range, so the shallow default is not enough.
           fetch-depth: 0
 
-      - uses: jdx/mise-action@v4
+      - uses: jdx/mise-action@v5
 
       - run: npm ci
 
